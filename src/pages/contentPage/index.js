@@ -11,12 +11,12 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage }) => {
   const [tabTtems, setTabTtems] = useState([]);
 
   useEffect(() => {
-    getData();
+    
   }, [])
 
+  // 点击菜单栏处理标签页
   useEffect(() => {
     if (currentMenu !== 'home') {
-      console.log(currentMenu)
       const hasCurrentTab = tabTtems.some(obj => obj.key.includes(currentMenu));
       if (!hasCurrentTab) {
         let url = currentMenu.split('|')[2].replace('./w', '');
@@ -26,11 +26,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage }) => {
           children: <div className="contentPage">
             <iframe 
               src={url}
-              class="content-iframe" 
-              frameborder="0">
+              className="content-iframe" 
+              frameBorder="0">
             </iframe>
           </div>,
-          key: currentMenu
+          key: currentMenu,
         })
         setTabTtems([...tabTtems])
       }
@@ -38,37 +38,44 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage }) => {
     }
   }, [currentMenu])
 
+  // 点击各模块打开标签页
   useEffect(() => {
     if (openPage.label) {
-      console.log(openPage)
-      // const hasCurrentTab = tabTtems.some(obj => obj.key.includes(currentMenu));
-      // if (!hasCurrentTab) {
-      //   let url = currentMenu.split('|')[2].replace('./w', '');
-      //   url = `${Domain}/r/w${url}`
-      //   tabTtems.push({
-      //     label: currentMenu.split('|')[1],
-      //     children: <div className="contentPage">
-      //       <iframe 
-      //         src={url}
-      //         class="content-iframe" 
-      //         frameborder="0">
-      //       </iframe>
-      //     </div>,
-      //     key: currentMenu
-      //   })
-      //   setTabTtems([...tabTtems])
-      // }
-      // setActiveKey(currentMenu);
+      const hasCurrentTab = tabTtems.some(obj => obj.key.includes(openPage.key));
+      // 没有当前页面标签就添加标签
+      if (!hasCurrentTab) {
+        tabTtems.push({
+          label: openPage.label,
+          children: <div className="contentPage">
+            <iframe 
+              src={openPage.params ? `${openPage.key}${openPage.params}` : openPage.key}
+              className="content-iframe" 
+              frameBorder="0">
+            </iframe>
+          </div>,
+          key: openPage.key
+        })
+        setTabTtems([...tabTtems])
+      } else if (openPage.params) { // 有当前页面标签但是传参改变
+        for (const i in tabTtems) {
+          if (tabTtems[i].key === openPage.key) {
+            tabTtems[i].children = <div className="contentPage">
+              <iframe 
+                src={`${openPage.key}${openPage.params}`}
+                className="content-iframe" 
+                frameBorder="0">
+              </iframe>
+            </div>
+          }
+        }
+        setTabTtems([...tabTtems]);
+      }
+      changeCurrentMenu('');
+      setTimeout(() => {
+        setActiveKey(openPage.key);
+      });
     }
   }, [openPage])
-
-  const getData = () => {
-    // get('/r/w', { cmd: 'com.bono.portal.allnav', sid: Sid }).then((res) => {
-    //   if (res.result === 'ok' && !isEmpty(res?.data)) {
-        
-    //   }
-    // })
-  };
 
   const remove = (targetKey) => {
     const targetIndex = tabTtems.findIndex(pane => pane.key === targetKey);

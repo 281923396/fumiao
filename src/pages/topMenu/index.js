@@ -4,8 +4,9 @@ import { Menu, Image, Dropdown, Input, Modal, message } from 'antd';
 import Logo from '../../assets/logo.png';
 import { get, post } from '../../utils/request';
 import { Sid, Domain } from '../../utils/constant';
-import { BellFilled, SearchOutlined } from '@ant-design/icons';
+import { BellFilled, SearchOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { isEmpty, cloneDeep } from 'lodash-es';
+import { useGlobal } from '../contexts/GlobalContext';
 
 const { Search } = Input;
 
@@ -20,7 +21,32 @@ const userItem = [
   },
 ];
 
+const typeList = [
+  {
+    label: '流程',
+    key: '流程',
+  },
+  {
+    label: '应用',
+    key: '应用',
+  },
+  {
+    label: '信息',
+    key: '信息',
+  },
+  {
+    label: '知识',
+    key: '知识',
+  },
+  {
+    label: '人员',
+    key: '人员',
+  },
+];
+
 const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
+  const { globalField } = useGlobal();
+
   const [menuItem, setMenuItem] = useState([{
     label: '门户',
     key: 'home',
@@ -29,6 +55,8 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
   const [loginoutOpen, setLoginoutOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [unread, setUnread] = useState(false);
+  const [type, setType] = useState('流程');
   const [passWord, setPassWord] = useState({
     old: '',
     new: '',
@@ -39,10 +67,17 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
     getAllMenu();
   }, [])
 
+  useEffect(() => {
+    if (globalField) {
+      getUnreadList(globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000);
+    }
+  }, [globalField])
+
   const onTitleClick = (e) => {
     changeCurrentMenu(e.key);
   };
 
+  // 获取所有菜单
   const getAllMenu = () => {
     get('/r/w', { cmd: 'com.bono.portal.allnav', sid: Sid }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.nav)) {
@@ -85,6 +120,22 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
       }
     })
   };
+
+  const getUnreadList = (time) => {
+    get('/r/w', { cmd: 'com.actionsoft.apps.notification_load_unread_msg', sid: Sid }).then((res) => {
+      if (res.result === 'ok') {
+        if (!isEmpty(res?.data?.list)) {
+          setUnread(true);
+        } else {
+          setUnread(false);
+        }
+      }
+      setTimeout(() => {
+        getUnreadList(time);
+      }, time);
+    })
+  };
+
   const onClick = (e) => {
     changeCurrentMenu(e.key);
   };
@@ -128,6 +179,10 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
     })
   };
 
+  const selectType = ({ key }) => {
+    setType(key);
+  };
+
   return (
     <div className="topMenu" onClick={() => setShowSearch(false)}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 30px' }}>
@@ -143,13 +198,40 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
           />
         </div>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <BellFilled style={{ color: '#fff', fontSize: '20px', cursor: 'pointer' }} />
+          <span style={{ position: 'relative' }}>
+            <BellFilled style={{ color: '#fff', fontSize: '20px', cursor: 'pointer' }}
+              onClick={() => {
+                changeOpenPage({
+                  label: '通知',
+                  key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.notification_center`
+                })
+              }}
+            />
+            {unread && (
+              <span style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                backgroundColor: '#f04134',
+                position: 'absolute',
+                right: 0,
+                top: 16,
+                display: 'block'
+              }}></span>
+            )}
+          </span>
           {showSearch ? (
             <div className="searchItem" onClick={(e) => {
                 setShowSearch(true);
                 e.stopPropagation();
               }}
             >
+              <Dropdown menu={{ items: typeList, onClick: selectType }} trigger={['click']}>
+                <span className="selectType">
+                  <span style={{ marginRight: 5 }}>{type}</span>
+                  <CaretDownOutlined />
+                </span>
+              </Dropdown>
               <Input
                 placeholder=""
                 allowClear
@@ -162,8 +244,9 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
                   if (e.key === 'Enter') {
                     if (searchValue) {
                       changeOpenPage({
-                        label: '信息',
-                        key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage&searchWords=${searchValue}&name=信息`
+                        label: '搜索',
+                        key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
+                        params: `&searchWords=${searchValue}&name=${type}`
                       })
                     }
                   }
@@ -174,8 +257,9 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
                 onClick={() => {
                   if (searchValue) {
                     changeOpenPage({
-                      label: '信息',
-                      key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage&searchWords=${searchValue}&name=信息`
+                      label: '搜索',
+                      key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
+                      params: `&searchWords=${searchValue}&name=${type}`
                     })
                   }
                 }}
@@ -193,10 +277,9 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
               style={{
                 width: 40,
                 height: 40,
-                backgroundColor: '#a2c9f4',
-                // backgroundImage: `url(${Banner})`,
-                // backgroundSize: '100% 100%',
-                // backgroundPosition: 'center',
+                backgroundImage: `url(${globalField?.avatorUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
                 borderRadius: '50%',
                 cursor: 'pointer'
               }}

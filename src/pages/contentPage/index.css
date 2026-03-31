@@ -75,6 +75,11 @@
     border-bottom: 1px dashed #cecece;
     padding: 10px 0;
     font-size: 12px;
+    cursor: pointer;
+}
+
+.msgItem:hover {
+    background-color: #f5f7fa;
 }
 
 .msgItem:last-child {
@@ -105,6 +110,11 @@
     border-bottom: 1px dashed #cecece;
     padding: 10px 0;
     font-size: 12px;
+    cursor: pointer;
+}
+
+.newsItem:hover {
+    background-color: #f5f7fa;
 }
 
 .dot {

@@ -53,7 +53,7 @@ const HomePage = () => {
         <Header
           style={{
             height: currentMenu === 'home' ? 600 : 64,
-            backgroundColor: currentMenu === 'home' ? '' : '#a2c9f4',
+            backgroundColor: currentMenu === 'home' ? '' : '#418ff3',
             backgroundImage: currentMenu === 'home' ? `url(${bannerUrl})` : '',
             backgroundSize: '100% 100%',
             backgroundPosition: 'center'
