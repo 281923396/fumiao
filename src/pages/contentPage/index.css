@@ -1,0 +1,141 @@
+
+.contentPage {
+    padding: 10px;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.container .leftItem {
+    width: 60%;
+    background-color: #fff;
+}
+
+.container .rightItem {
+    flex: 1;
+    background-color: #fff;
+    margin-left: 10px;
+}
+
+.itemHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.labelIcon {
+    width: 3px;
+    height: 14px;
+    background-color: #0142b8;
+    margin-right: 4px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-top: 2px;
+}
+
+.title {
+    cursor: pointer;
+    margin-right: 15px;
+    color: #c3c1c2;
+}
+
+.itemBody {
+    padding: 10px 20px;
+}
+
+.tagList {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f7f7f7;
+}
+
+.tagList span {
+    min-width: 100px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    background-color: #f0f0f0;
+    color: #0142b8;
+    cursor: pointer;
+    margin-right: 6px;
+    display: inline-block;
+    border-radius: 4px;
+}
+.msgItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #9f9f9f;
+    border-bottom: 1px dashed #cecece;
+    padding: 10px 0;
+    font-size: 12px;
+}
+
+.msgItem:last-child {
+    border-bottom: none;
+}
+
+.newsBody {
+    padding: 30px 20px;
+    display: flex;
+}
+.comPic {
+    width: 300px;
+    height: 156px;
+    background: url('../../assets//comPic.png') center no-repeat;
+    background-size: 100% 100%;
+}
+
+.newsList {
+    margin-left: 15px;
+    flex: 1;
+}
+
+.newsItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #6f6f71;
+    border-bottom: 1px dashed #cecece;
+    padding: 10px 0;
+    font-size: 12px;
+}
+
+.dot {
+    background-color: #c5c5c5;
+    width: 4px;
+    height: 4px;
+    display: inline-block;
+    border-radius: 50%;
+    margin-bottom: 3px;
+    margin-right: 5px;
+}
+
+.newTag {
+    background-color: #a5a5a5;
+    color: #fff;
+    margin-left: 10px;
+    padding: 0 3px;
+    font-size: 8px;
+    border-radius: 4px;
+}
+.content-iframe {
+  width: 100%;
+  height: calc(100vh - 144px);
+  border: none;
+  background-color: #fff;
+  display: block;
+  border-radius: 6px;
+}
+
+.ant-tabs-nav {
+    padding: 5px;
+    margin: 10px 10px 0 !important;
+    background-color: #fff;
+}
