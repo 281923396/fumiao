@@ -60,28 +60,32 @@
     color: #fff !important;
 }
 
-.homePage :where(.css-dev-only-do-not-override-151uw82).ant-menu-light.ant-menu-submenu-popup>.ant-menu {
+.homePage .ant-menu-light.ant-menu-submenu-popup>.ant-menu {
     background-color: rgba(0, 0, 0, 0.6)  !important;
     color: white !important;
 }
 
-.homePage :where(.css-dev-only-do-not-override-151uw82).ant-menu .ant-menu-item-group .ant-menu-item-group-list .ant-menu-item-selected {
+.homePage .ant-menu .ant-menu-item-group .ant-menu-item-group-list .ant-menu-item-selected {
     background-color: rgba(255, 255, 255, 0.5)  !important;
 }
 
-.homePage :where(.css-dev-only-do-not-override-151uw82).ant-menu-light:not(.ant-menu-horizontal) .ant-menu-item:not(.ant-menu-item-selected):hover, :where(.css-dev-only-do-not-override-151uw82).ant-menu-light>.ant-menu:not(.ant-menu-horizontal) .ant-menu-item:not(.ant-menu-item-selected):hover {
+.homePage .ant-menu-light:not(.ant-menu-horizontal) .ant-menu-item:not(.ant-menu-item-selected):hover, .ant-menu-light>.ant-menu:not(.ant-menu-horizontal) .ant-menu-item:not(.ant-menu-item-selected):hover {
     background-color: rgba(255, 255, 255, 0.3)  !important;
 }
 
-.homePage :where(.css-dev-only-do-not-override-151uw82).ant-menu-light>.ant-menu .ant-menu-item-selected {
+.homePage .ant-menu-light>.ant-menu .ant-menu-item-selected {
     background-color: rgba(255, 255, 255, 0.3)  !important;
 }
 
-.homePage :where(.css-dev-only-do-not-override-151uw82).ant-menu-light .ant-menu-submenu-title, :where(.css-dev-only-do-not-override-151uw82).ant-menu-light>.ant-menu .ant-menu-submenu-title {
+.homePage .ant-menu-light .ant-menu-submenu-title, .ant-menu-light>.ant-menu .ant-menu-submenu-title {
     color: white !important;
 }
-.homePage :where(.css-dev-only-do-not-override-151uw82).ant-menu-light .ant-menu-item-disabled, :where(.css-dev-only-do-not-override-151uw82).ant-menu-light>.ant-menu .ant-menu-item-disabled {
+.homePage .ant-menu-light .ant-menu-item-disabled, .ant-menu-light>.ant-menu .ant-menu-item-disabled {
     color: white !important;
+}
+
+.ant-menu-light:not(.ant-menu-horizontal) .ant-menu-submenu-title:active, .ant-menu-light>.ant-menu:not(.ant-menu-horizontal) .ant-menu-submenu-title:active {
+    background-color: rgba(255, 255, 255, 0.3)  !important;
 }
 
 .searchItem {

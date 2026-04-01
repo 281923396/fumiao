@@ -2,10 +2,11 @@ import './index.css';
 import React, { useState, useEffect } from 'react';
 import { get } from '../../utils/request';
 import { Sid, Domain } from '../../utils/constant';
-import { Tabs, Empty } from 'antd';
+import { Tabs, Empty, Carousel } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
 import { isEmpty, map } from 'lodash-es';
 import { useGlobal } from '../contexts/GlobalContext';
+import Banner from '../../assets/banner.jpg'
 
 const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage }) => {
   const { globalField } = useGlobal();
@@ -242,10 +243,10 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                   let label = '';
                   if (titleOne === '1') {
                     label = '待办事项';
-                    url = `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_task&start=1&boxType=1&boxName=todo&groupName=noGroup&taskInstId=&queryMode=mytask`;
+                    url = `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=todo`;
                   } else if (titleOne === '2') {
                     label = '未读通知';
-                    url = `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_task&start=1&boxType=2&boxName=unreadNotice&groupName=noGroup&taskInstId=&queryMode=mytask`;
+                    url = `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=unreadNotice`;
                   } else {
                     
                     label = '未结事项';
@@ -349,16 +350,63 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
               <div className="itemHeader">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span className="labelIcon"></span>
-                  <span className="title" style={{ color: '#312f30', fontWeight: 600 }}>公司新闻</span>
-                  <span className="title">企业文化</span>
+                  <span className={`title ${titleThree === '1' ? 'selectedTitle' : ''}`} onClick={() => setTitleThree('1')}>公司新闻</span>
+                  <span className={`title ${titleThree === '2' ? 'selectedTitle' : ''}`} onClick={() => setTitleThree('2')}>企业文化</span>
                 </div>
-                <div style={{ color: '#0142b8', cursor: 'pointer' }}><RightOutlined style={{ marginRight: 6 }} />更多</div>
+                <div style={{ color: '#0142b8', cursor: 'pointer' }}onClick={() => {
+                  changeOpenPage({
+                    label: '资讯中心',
+                    key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_site&siteid=${globalField.siteId}`,
+                  })
+                }}><RightOutlined style={{ marginRight: 6 }} />更多</div>
               </div>
               <div className="newsBody">
-                <div className="comPic"></div>
+                <Carousel arrows className="comPic" autoplay>
+                  <div>
+                    <h3
+                      style={{
+                        width: 300,
+                        height: 156,
+                        backgroundImage: `url(${Banner})`,
+                        backgroundSize: '100% 100%',
+                        backgroundPosition: 'center',
+                        margin: 0
+                      }}
+                    >
+                    </h3>
+                  </div>
+                  <div>
+                    <h3
+                      style={{
+                        width: 300,
+                        height: 156,
+                        backgroundImage: `url(${Banner})`,
+                        backgroundSize: '100% 100%',
+                        backgroundPosition: 'center',
+                        margin: 0
+                      }}
+                    >
+                    </h3>
+                  </div>
+                  <div>
+                    <h3
+                      style={{
+                        width: 300,
+                        height: 156,
+                        backgroundImage: `url(${Banner})`,
+                        backgroundSize: '100% 100%',
+                        backgroundPosition: 'center',
+                        margin: 0
+                      }}
+                    >
+                    </h3>
+                  </div>
+                </Carousel>
                 <div className="newsList">
-                  <div className="newsItem" style={{ color: '#0142b8', fontWeight: 600 }}>
-                    <span><span className="dot" style={{ backgroundColor: '#0142b8' }}></span>请审批<span className="newTag">NEW</span></span>
+                  {/* <div className="newsItem" style={{ color: '#0142b8', fontWeight: 600 }}>
+                    <span><span className="dot" style={{ backgroundColor: '#0142b8' }}></span>请审批<span className="newTag">NEW</span></span> */}
+                  <div className="newsItem">
+                    <span><span className="dot"></span>请审批</span>
                     <span>2026-02-25</span>
                   </div>
                   <div className="newsItem">
