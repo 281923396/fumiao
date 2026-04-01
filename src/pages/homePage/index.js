@@ -4,7 +4,7 @@ import './index.css';
 import { Layout, Breadcrumb } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { get, post } from '../../utils/request';
-import Banner from '../../assets/banner.png'
+import Banner from '../../assets/banner.jpg'
 import { Sid, ModuleId, Domain } from '../../utils/constant';
 
 const { Header, Content, Footer } = Layout;
@@ -20,26 +20,30 @@ const HomePage = () => {
 
   const getBanner = () => {
     get('/r/w', { cmd: 'com.fumiao.portal.cms', sid: Sid, moduleId: ModuleId, type: 4 }).then((res) => {
-      if (res.result === 'ok' && res?.data?.datalist) {
-        const data = res.data.datalist[0];
+      if (res.result === 'ok') {
         let imageUrl = '';
-        if (data.titPicList && data.titPicList.length > 0 && data.titPicList[0].titPicUrl) {
-          // 如果titPicUrl是相对路径
-          const titPicUrl = data.titPicList[0].titPicUrl;
-          if (titPicUrl.startsWith('./')) {
-            // 移除开头的'./'，并使用正确的路径 - 只用一个df
-            imageUrl = `${Domain}/r${titPicUrl.substring(1)}`;
+        if (res?.data?.datalist) {
+          const data = res.data.datalist[0];
+          if (data.titPicList && data.titPicList.length > 0 && data.titPicList[0].titPicUrl) {
+            // 如果titPicUrl是相对路径
+            const titPicUrl = data.titPicList[0].titPicUrl;
+            if (titPicUrl.startsWith('./')) {
+              // 移除开头的'./'，并使用正确的路径 - 只用一个df
+              imageUrl = `${Domain}/r${titPicUrl.substring(1)}`;
+            } else {
+              imageUrl = `${Domain}/r${titPicUrl}`;
+            }
+          } else if (data.titlePicF && data.titlePicF.length > 0) {
+            // 备选：使用titlePicF
+            imageUrl = `${Domain}/r/df?fileName=${data.titlePicF[0].fileName}&sid=${this.sid}`;
+          } else if (data.msgTitlePic) {
+            // 备选：使用msgTitlePic
+            imageUrl = `${Domain}/r/df?fileName=${data.msgTitlePic}&sid=${this.sid}`;
           } else {
-            imageUrl = `${Domain}/r${titPicUrl}`;
+            // 默认图片
+            imageUrl = Banner;
           }
-        } else if (data.titlePicF && data.titlePicF.length > 0) {
-          // 备选：使用titlePicF
-          imageUrl = `${Domain}/r/df?fileName=${data.titlePicF[0].fileName}&sid=${this.sid}`;
-        } else if (data.msgTitlePic) {
-          // 备选：使用msgTitlePic
-          imageUrl = `${Domain}/r/df?fileName=${data.msgTitlePic}&sid=${this.sid}`;
         } else {
-          // 默认图片
           imageUrl = Banner;
         }
         setBannerUrl(imageUrl);
@@ -75,6 +79,9 @@ const HomePage = () => {
             openPage={openPage}
             changeCurrentMenu={(value) => {
               setCurrentMenu(value);
+            }}
+            changeOpenPage={(data) => {
+              setOpenPage(data);
             }}
           />
         </Content>

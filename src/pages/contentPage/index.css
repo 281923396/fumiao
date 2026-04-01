@@ -12,12 +12,14 @@
 .container .leftItem {
     width: 60%;
     background-color: #fff;
+    min-height: 250px;
 }
 
 .container .rightItem {
     flex: 1;
     background-color: #fff;
     margin-left: 10px;
+    min-height: 250px;
 }
 
 .itemHeader {
@@ -42,6 +44,11 @@
     cursor: pointer;
     margin-right: 15px;
     color: #c3c1c2;
+}
+
+.selectedTitle {
+    color: #312f30;
+    font-weight: 600
 }
 
 .itemBody {
@@ -148,4 +155,10 @@
     padding: 5px;
     margin: 10px 10px 0 !important;
     background-color: #fff;
+}
+
+.ant-tabs .ant-tabs-tab-btn {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
