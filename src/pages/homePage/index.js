@@ -1,7 +1,7 @@
 import TopMenu from '../topMenu';
 import ContentPage from '../contentPage';
 import './index.css';
-import { Layout, Breadcrumb } from 'antd';
+import { Layout } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { get, post } from '../../utils/request';
 import Banner from '../../assets/banner.jpg'
@@ -55,7 +55,7 @@ const HomePage = () => {
 
   return (
     <div className="homePage" id="homePage">
-      <Layout style={{ height: '100vh' }}>
+      <Layout style={{ minHeight: '100vh' }}>
         <Header
           style={{
             height: currentMenu === 'home' ? 600 : 64,
@@ -75,7 +75,7 @@ const HomePage = () => {
             }}
           />
         </Header>
-        <Content style={{ backgroundColor: '#eceaeb' }}>
+        <Content style={{ backgroundColor: 'rgb(236, 234, 235, 0.3)' }}>
           <ContentPage
             currentMenu={currentMenu}
             openPage={openPage}

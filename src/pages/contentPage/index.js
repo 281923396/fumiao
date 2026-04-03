@@ -1,10 +1,10 @@
 import './index.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { get } from '../../utils/request';
 import Config from '../../utils/constant';
 import { Tabs, Empty, Carousel, message, Image } from 'antd';
 import { RightOutlined } from '@ant-design/icons';
-import { isEmpty, map } from 'lodash-es';
+import { cloneDeep, isEmpty, map } from 'lodash-es';
 import { useGlobal } from '../contexts/GlobalContext';
 import CompanyDefault from '../../assets/companyDefault.png';
 
@@ -13,7 +13,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
   const { globalField } = useGlobal();
 
   const [activeKey, setActiveKey] = useState('');
-  const [tabTtems, setTabTtems] = useState([]);
+  const [tabItems, setTabItems] = useState([]);
   const [titleOne, setTitleOne] = useState('1');
   const [titleTwo, setTitleTwo] = useState('1');
   const [titleThree, setTitleThree] = useState('1');
@@ -26,12 +26,23 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
   const [cultureList, setCultureList] = useState([]);
   const [shortcutList, setShortcutList] = useState([]);
 
+  const tabItemsRef = useRef(tabItems);
+  const activeKeyRef = useRef(activeKey);
+
   useEffect(() => {
     getNoticeList();
     getCompanySystemList();
     getCultureList();
     getShortcutList();
   }, [])
+
+  useEffect(() => {
+    tabItemsRef.current = tabItems;
+  }, [tabItems]);
+
+  useEffect(() => {
+    activeKeyRef.current = activeKey;
+  }, [activeKey]);
 
   // 判断日期是否在指定天数内
   const isWithinDays = (dateStr, days) => {
@@ -278,34 +289,49 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
   // 点击菜单栏处理标签页
   useEffect(() => {
     if (currentMenu !== 'home') {
-      const hasCurrentTab = tabTtems.some(obj => obj.key.includes(currentMenu));
+      const hasCurrentTab = tabItems.some(obj => obj.key.includes(currentMenu));
       if (!hasCurrentTab) {
         let url = currentMenu.split('|')[2].replace('./w', '');
         url = `${BaseUrl}/r/w${url}`
-        tabTtems.push({
+        tabItems.push({
           label: <span title={currentMenu.split('|')[1]}>{currentMenu.split('|')[1]}</span>,
           children: <div className="contentPage">
             <iframe 
               src={url}
               className="content-iframe" 
-              frameBorder="0">
+              frameBorder="0"
+            >
             </iframe>
           </div>,
           key: currentMenu,
         })
-        setTabTtems([...tabTtems])
+        setTabItems([...tabItems])
       }
-      setActiveKey(currentMenu);
+      if (currentMenu) {
+        setActiveKey(currentMenu);
+      }
     }
   }, [currentMenu])
+
+  const listenMessage = (e) => {
+    if (e.data.type === 'closePage') {
+      remove(e.data.pageUrl, tabItemsRef.current, activeKeyRef.current);
+    }
+  };
+
+  // 5. 跨域方案（必须子页面配合）
+  useEffect(() => {
+    window.addEventListener('message', listenMessage);
+    return () => window.removeEventListener('message', listenMessage);
+  }, []);
 
   // 点击各模块打开标签页
   useEffect(() => {
     if (openPage.label) {
-      const hasCurrentTab = tabTtems.some(obj => obj.key.includes(openPage.key));
+      const hasCurrentTab = tabItems.some(obj => obj.key.includes(openPage.key));
       // 没有当前页面标签就添加标签
       if (!hasCurrentTab) {
-        tabTtems.push({
+        tabItems.push({
           label: <span title={openPage.label}>{openPage.label}</span>,
           children: <div className="contentPage">
             <iframe 
@@ -316,11 +342,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
           </div>,
           key: openPage.key
         })
-        setTabTtems([...tabTtems])
+        setTabItems([...tabItems])
       } else if (openPage.params) { // 有当前页面标签但是传参改变
-        for (const i in tabTtems) {
-          if (tabTtems[i].key === openPage.key) {
-            tabTtems[i].children = <div className="contentPage">
+        for (const i in tabItems) {
+          if (tabItems[i].key === openPage.key) {
+            tabItems[i].children = <div className="contentPage">
               <iframe 
                 src={`${openPage.key}${openPage.params}`}
                 className="content-iframe" 
@@ -329,7 +355,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
             </div>
           }
         }
-        setTabTtems([...tabTtems]);
+        setTabItems([...tabItems]);
       }
       changeCurrentMenu('');
       setTimeout(() => {
@@ -338,14 +364,14 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
     }
   }, [openPage])
 
-  const remove = (targetKey) => {
-    const targetIndex = tabTtems.findIndex(pane => pane.key === targetKey);
-    const newPanes = tabTtems.filter(pane => pane.key !== targetKey);
+  const remove = (targetKey, tabItems, activeKey) => {
+    const targetIndex = tabItems.findIndex(pane => pane.key === targetKey);
+    const newPanes = tabItems.filter(pane => pane.key !== targetKey);
+    setTabItems(newPanes);
     if (newPanes.length && targetKey === activeKey) {
       const { key } = newPanes[targetIndex === newPanes.length ? targetIndex - 1 : targetIndex];
       setActiveKey(key);
     }
-    setTabTtems(newPanes);
     if (isEmpty(newPanes)) {
       changeCurrentMenu('home');
     }
@@ -357,7 +383,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
 
   const onEdit = (targetKey, action) => {
     if (action === 'remove') {
-      remove(targetKey);
+      remove(targetKey, tabItems, activeKey);
     }
   };
 
@@ -496,7 +522,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
             activeKey={activeKey}
             type="editable-card"
             onEdit={onEdit}
-            items={tabTtems}
+            items={tabItems}
           />
         </div>
       ) : (
@@ -621,7 +647,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
               </div>
             </div>
           </div>
-          <div className="container">
+          <div className="container" style={{ marginBottom: 0 }}>
             <div className="leftItem minHeight">
               <div className="itemHeader">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -639,7 +665,8 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
               <div className="itemBody">
                 {titleThree === '1' ? (
                   <div style={{ display: 'flex', padding: '9px 0' }}>
-                    <Carousel arrows className="comPic" autoplay>
+                    {!isEmpty(companyNewList) && (
+                      <Carousel arrows className="comPic" autoplay>
                        {map(companyNewList, (item, index) => {
                           return (
                             <div>
@@ -658,6 +685,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                           )
                         })}
                     </Carousel>
+                    )}
                     <div className="newsList">
                       {/* <div className="newsItem" style={{ color: '#0142b8', fontWeight: 600 }}>
                         <span><span className="dot" style={{ backgroundColor: '#0142b8' }}></span>请审批<span className="newTag">NEW</span></span> */}
@@ -762,6 +790,9 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                     )
                   })}
                 </div>
+                {isEmpty(shortcutList) && (
+                  <Empty description="暂无数据~" style={{ marginTop: 20 }} />
+                )}
               </div>
             </div>
           </div>

@@ -45,9 +45,11 @@ service.interceptors.response.use(
     const res = response.data;
     const newRes = JSON.stringify(res)
     if (newRes.indexOf('用户会话已失效') > -1) {
-      // document.body.innerHTML = res;
-      document.write(res);
-      document.close();
+      // document.write(res);
+      // document.close();
+      message.error('用户会话已失效，请重新登录！', 3, () => {
+        window.location.href = BaseUrl;
+      });
     } else if (res?.result === 'error') {
       message.error(res.msg);
     }
