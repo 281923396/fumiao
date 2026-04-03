@@ -22,6 +22,10 @@
     min-height: 250px;
 }
 
+.minHeight {
+    min-height: 300px !important;
+}
+
 .itemHeader {
     display: flex;
     align-items: center;
@@ -78,7 +82,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: #9f9f9f;
+    color: rgb(102, 102, 102);
     border-bottom: 1px dashed #cecece;
     padding: 10px 0;
     font-size: 12px;
@@ -93,27 +97,24 @@
     border-bottom: none;
 }
 
-.newsBody {
-    padding: 30px 20px;
-    display: flex;
-}
 .comPic {
-    width: 300px;
-    height: 156px;
+    width: 340px;
+    height: 220px;
 }
 
 .newsList {
     margin-left: 15px;
     flex: 1;
+    width: 1px;
 }
 
 .newsItem {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: #6f6f71;
+    color: rgb(102, 102, 102);
     border-bottom: 1px dashed #cecece;
-    padding: 10px 0;
+    padding: 18px 0;
     font-size: 12px;
     cursor: pointer;
 }
@@ -128,8 +129,8 @@
     height: 4px;
     display: inline-block;
     border-radius: 50%;
-    margin-bottom: 3px;
     margin-right: 5px;
+    flex-shrink: 0;
 }
 
 .newTag {
@@ -159,4 +160,14 @@
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.shortcutItem {
+    margin: 5px 10px;
+    cursor: pointer;
+    padding: 5px;
+}
+ 
+.shortcutItem:hover {
+    background-color: #f5f7fa;
 }

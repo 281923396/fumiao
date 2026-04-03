@@ -1,11 +1,13 @@
 import axios from 'axios';
-import { Domain } from './constant';
+import Config from './constant';
 import { message } from 'antd';
+
+const { BaseUrl } = Config;
 
 // 创建 axios 实例
 const service = axios.create({
   // 基准 URL（根据你的后端接口地址配置，可通过环境变量区分开发/生产环境）
-  baseURL: Domain,
+  baseURL: BaseUrl,
   // 请求超时时间
   timeout: 10000,
   // 允许携带跨域凭证（如需要）

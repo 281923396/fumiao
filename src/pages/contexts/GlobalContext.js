@@ -1,13 +1,14 @@
 // src/contexts/GlobalContext.js
 import { createContext, useState, useEffect, useContext } from 'react';
 import { get, post } from '../../utils/request';
-import { Sid } from '../../utils/constant';
+import Config from '../../utils/constant';
 
 // 1. 创建全局上下文
 const GlobalContext = createContext();
 
 // 2. 封装全局Provider（提供者）：所有页面共享状态
 export function GlobalProvider({ children }) {
+  const { Sid } = Config;
   // 全局存储公共字段（所有页面都能用）
   const [globalField, setGlobalField] = useState(null);
   // 全局加载/错误状态

@@ -5,11 +5,13 @@ import { Layout, Breadcrumb } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { get, post } from '../../utils/request';
 import Banner from '../../assets/banner.jpg'
-import { Sid, ModuleId, Domain } from '../../utils/constant';
+import Config from '../../utils/constant';
 
 const { Header, Content, Footer } = Layout;
 
 const HomePage = () => {
+  const { Sid, ModuleId, BaseUrl } = Config;
+
   const [currentMenu, setCurrentMenu] = useState('home');
   const [bannerUrl, setBannerUrl] = useState('');
   const [openPage, setOpenPage] = useState({});
@@ -29,16 +31,16 @@ const HomePage = () => {
             const titPicUrl = data.titPicList[0].titPicUrl;
             if (titPicUrl.startsWith('./')) {
               // 移除开头的'./'，并使用正确的路径 - 只用一个df
-              imageUrl = `${Domain}/r${titPicUrl.substring(1)}`;
+              imageUrl = `${BaseUrl}/r${titPicUrl.substring(1)}`;
             } else {
-              imageUrl = `${Domain}/r${titPicUrl}`;
+              imageUrl = `${BaseUrl}/r${titPicUrl}`;
             }
           } else if (data.titlePicF && data.titlePicF.length > 0) {
             // 备选：使用titlePicF
-            imageUrl = `${Domain}/r/df?fileName=${data.titlePicF[0].fileName}&sid=${this.sid}`;
+            imageUrl = `${BaseUrl}/r/df?fileName=${data.titlePicF[0].fileName}&sid=${this.sid}`;
           } else if (data.msgTitlePic) {
             // 备选：使用msgTitlePic
-            imageUrl = `${Domain}/r/df?fileName=${data.msgTitlePic}&sid=${this.sid}`;
+            imageUrl = `${BaseUrl}/r/df?fileName=${data.msgTitlePic}&sid=${this.sid}`;
           } else {
             // 默认图片
             imageUrl = Banner;

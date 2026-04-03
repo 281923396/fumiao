@@ -1,9 +1,9 @@
 import './index.css';
 import React, { useState, useEffect } from 'react';
 import { Menu, Image, Dropdown, Input, Modal, message } from 'antd';
-import Logo from '../../assets/logo.png';
+import Logo from '../../assets/logoWhite.png';
 import { get, post } from '../../utils/request';
-import { Sid, Domain } from '../../utils/constant';
+import Config from '../../utils/constant';
 import { BellFilled, SearchOutlined, CaretDownOutlined } from '@ant-design/icons';
 import { isEmpty, cloneDeep } from 'lodash-es';
 import { useGlobal } from '../contexts/GlobalContext';
@@ -45,6 +45,7 @@ const typeList = [
 ];
 
 const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
+  const { Sid, BaseUrl } = Config;
   const { globalField } = useGlobal();
 
   const [menuItem, setMenuItem] = useState([{
@@ -186,8 +187,10 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
   return (
     <div className="topMenu" onClick={() => setShowSearch(false)}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 30px' }}>
-        <div style={{ display: 'flex', flex: 1 }}>
-          <Image src={Logo} width={120} height={55} preview={false} />
+        <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
+          <span style={{ marginRight: 20 }}>
+            <Image src={Logo} preview={false} style={{ height: 35 }} />
+          </span>
           <Menu
             onClick={onClick}
             selectedKeys={[currentMenu]}
@@ -203,7 +206,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
               onClick={() => {
                 changeOpenPage({
                   label: '通知',
-                  key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.notification_center`
+                  key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.notification_center`
                 })
               }}
             />
@@ -245,7 +248,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
                     if (searchValue) {
                       changeOpenPage({
                         label: '搜索',
-                        key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
+                        key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
                         params: `&searchWords=${searchValue}&name=${type}`
                       })
                     }
@@ -258,7 +261,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
                   if (searchValue) {
                     changeOpenPage({
                       label: '搜索',
-                      key: `${Domain}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
+                      key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
                       params: `&searchWords=${searchValue}&name=${type}`
                     })
                   }
@@ -340,7 +343,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
         title="提示"
         open={loginoutOpen}
         onOk={() => {
-          window.location.href = `${Domain}/r/w?sid=${Sid}&cmd=CLIENT_USER_INFO_LOGOUT`;
+          window.location.href = `${BaseUrl}/r/w?sid=${Sid}&cmd=CLIENT_USER_INFO_LOGOUT`;
         }}
         maskClosable={false}
         okText="确定"
