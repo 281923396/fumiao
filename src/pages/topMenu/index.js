@@ -137,7 +137,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
     })
   };
 
-  const onClick = (e) => {
+  const onClickMenu = (e) => {
     changeCurrentMenu(e.key);
   };
 
@@ -192,7 +192,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
             <Image src={Logo} preview={false} style={{ height: 35 }} />
           </span>
           <Menu
-            onClick={onClick}
+            onClick={onClickMenu}
             selectedKeys={[currentMenu]}
             mode="horizontal"
             items={menuItem}

@@ -58,13 +58,27 @@ const HomePage = () => {
       <Layout style={{ minHeight: '100vh' }}>
         <Header
           style={{
-            height: currentMenu === 'home' ? 600 : 64,
+            height: currentMenu === 'home' ? 300 : 64,
             backgroundColor: currentMenu === 'home' ? '' : '#418ff3',
-            backgroundImage: currentMenu === 'home' ? `url(${bannerUrl})` : '',
-            backgroundSize: '100% 100%',
-            backgroundPosition: 'center'
+            position: 'relative',
+            // backgroundImage: currentMenu === 'home' ? `url(${bannerUrl})` : '',
+            // backgroundSize: '100% 100%',
+            // backgroundPosition: 'center'
           }}
         >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url(${bannerUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              opacity: currentMenu === 'home' ? 1 : 0,
+              width: '100%',
+              height: '100%'
+            }}
+          ></div>
           <TopMenu
             currentMenu={currentMenu}
             changeCurrentMenu={(value) => {

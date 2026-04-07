@@ -16,6 +16,8 @@
     background-color: transparent !important;
     /* flex: 1; */
     width: 70%;
+    height: 30px;
+    line-height: 30px;
 }
 .topMenu .ant-menu-item-selected::after {
     border: none !important;
@@ -86,6 +88,10 @@
 
 .ant-menu-light:not(.ant-menu-horizontal) .ant-menu-submenu-title:active, .ant-menu-light>.ant-menu:not(.ant-menu-horizontal) .ant-menu-submenu-title:active {
     background-color: rgba(255, 255, 255, 0.3)  !important;
+}
+
+.ant-menu-submenu-popup:has(.ant-menu-submenu-level-1) {
+    top: 44px !important;
 }
 
 .searchItem {

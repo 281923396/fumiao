@@ -256,9 +256,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
       if (res.result === 'ok' && !isEmpty(res?.data?.tasks)) {
         setTodoList(res.data.tasks);
       }
-      setTimeout(() => {
-        getTodoList(time);
-      }, time);
+      if (time) {
+        setTimeout(() => {
+          getTodoList(time);
+        }, time);
+      }
     })
   };
 
@@ -268,9 +270,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
       if (res.result === 'ok' && !isEmpty(res?.data)) {
         setUnreadNoticeList(res.data);
       }
-      setTimeout(() => {
-        getUnreadNotice(time);
-      }, time);
+      if (time) {
+        setTimeout(() => {
+          getUnreadNotice(time);
+        }, time);
+      }
     })
   };
 
@@ -280,19 +284,21 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
       if (res.result === 'ok' && !isEmpty(res?.data)) {
         setUnfinishedProcessList(res.data);
       }
-      setTimeout(() => {
-        getUnfinishedProcess(time);
-      }, time);
+      if (time) {
+        setTimeout(() => {
+          getUnfinishedProcess(time);
+        }, time);
+      }
     })
   };
 
   // 点击菜单栏处理标签页
   useEffect(() => {
-    if (currentMenu !== 'home') {
+    if (currentMenu !== 'home' && currentMenu) {
       const hasCurrentTab = tabItems.some(obj => obj.key.includes(currentMenu));
+      let url = currentMenu.split('|')[2].replace('./w', '');
+      url = `${BaseUrl}/r/w${url}`;
       if (!hasCurrentTab) {
-        let url = currentMenu.split('|')[2].replace('./w', '');
-        url = `${BaseUrl}/r/w${url}`
         tabItems.push({
           label: <span title={currentMenu.split('|')[1]}>{currentMenu.split('|')[1]}</span>,
           children: <div className="contentPage">
@@ -303,13 +309,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
             >
             </iframe>
           </div>,
-          key: currentMenu,
+          key: url,
         })
         setTabItems([...tabItems])
       }
-      if (currentMenu) {
-        setActiveKey(currentMenu);
-      }
+      setActiveKey(url);
     }
   }, [currentMenu])
 
@@ -336,11 +340,12 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
           children: <div className="contentPage">
             <iframe 
               src={openPage.params ? `${openPage.key}${openPage.params}` : openPage.key}
-              className="content-iframe" 
+              className="content-iframe"
               frameBorder="0">
             </iframe>
           </div>,
-          key: openPage.key
+          key: openPage.key,
+          type: openPage.type ? openPage.type : ''
         })
         setTabItems([...tabItems])
       } else if (openPage.params) { // 有当前页面标签但是传参改变
@@ -349,7 +354,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
             tabItems[i].children = <div className="contentPage">
               <iframe 
                 src={`${openPage.key}${openPage.params}`}
-                className="content-iframe" 
+                className="content-iframe"
                 frameBorder="0">
               </iframe>
             </div>
@@ -358,14 +363,22 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
         setTabItems([...tabItems]);
       }
       changeCurrentMenu('');
-      setTimeout(() => {
-        setActiveKey(openPage.key);
-      });
+      setActiveKey(openPage.key);
     }
   }, [openPage])
 
+  // 关闭页签
   const remove = (targetKey, tabItems, activeKey) => {
     const targetIndex = tabItems.findIndex(pane => pane.key === targetKey);
+
+    // 关闭的页签是待办或者未读通知就刷新列表
+    const delTab = tabItems[targetIndex];
+    if (delTab.type === 'todo') {
+      getTodoList();
+    } else if (delTab.type === 'unreadNotice') {
+      getUnreadNotice();
+    }
+
     const newPanes = tabItems.filter(pane => pane.key !== targetKey);
     setTabItems(newPanes);
     if (newPanes.length && targetKey === activeKey) {
@@ -532,9 +545,18 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
               <div className="itemHeader">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span className="labelIcon"></span>
-                  <span className={`title ${titleOne === '1' ? 'selectedTitle' : ''}`} onClick={() => setTitleOne('1')}>待办事项</span>
-                  <span className={`title ${titleOne === '2' ? 'selectedTitle' : ''}`} onClick={() => setTitleOne('2')}>未读通知</span>
-                  <span className={`title ${titleOne === '3' ? 'selectedTitle' : ''}`} onClick={() => setTitleOne('3')}>未结事项</span>
+                  <span className={`title ${titleOne === '1' ? 'selectedTitle' : ''}`} onClick={() => {
+                    setTitleOne('1');
+                    getTodoList();
+                  }}>待办事项</span>
+                  <span className={`title ${titleOne === '2' ? 'selectedTitle' : ''}`} onClick={() => {
+                    setTitleOne('2');
+                    getUnreadNotice();
+                  }}>未读通知</span>
+                  <span className={`title ${titleOne === '3' ? 'selectedTitle' : ''}`} onClick={() => {
+                    setTitleOne('3');
+                    getUnfinishedProcess();
+                  }}>未结事项</span>
                 </div>
                 <div style={{ color: '#0142b8', cursor: 'pointer' }} onClick={() => {
                   let url = '';
@@ -553,6 +575,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                   changeOpenPage({
                     label: label,
                     key: url,
+                    type: titleOne === '1' ? 'todo' : titleOne === '2' ? 'unreadNotice' : '',
                   })
                 }}>
                   <RightOutlined style={{ marginRight: 6 }} />更多
@@ -573,11 +596,13 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                         changeOpenPage({
                           label: item.title,
                           key: `${BaseUrl}/r/w${newUrl}`,
+                          type: 'todo'
                         })
                       } else {
                         changeOpenPage({
                           label: item.title,
                           key: item.url,
+                          type: titleOne === '2' ? 'unreadNotice' : ''
                         })
                       }
                     }}>
