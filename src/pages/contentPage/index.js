@@ -2,13 +2,13 @@ import './index.css';
 import React, { useState, useEffect, useRef } from 'react';
 import { get } from '../../utils/request';
 import Config from '../../utils/constant';
-import { Tabs, Empty, Carousel, message, Image } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
+import { Tabs, Empty, Carousel, message, Image, Flex } from 'antd';
+import { RightOutlined, BellOutlined, LinkOutlined, PictureOutlined, BookOutlined, FileOutlined, CarryOutOutlined, CommentOutlined, SolutionOutlined } from '@ant-design/icons';
 import { cloneDeep, isEmpty, map } from 'lodash-es';
 import { useGlobal } from '../contexts/GlobalContext';
 import CompanyDefault from '../../assets/companyDefault.png';
 
-const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage }) => {
+const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage, reloadMsg }) => {
   const { Sid, BaseUrl } = Config;
   const { globalField } = useGlobal();
 
@@ -377,6 +377,8 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
       getTodoList();
     } else if (delTab.type === 'unreadNotice') {
       getUnreadNotice();
+    } else if (delTab.type === 'message') {
+      reloadMsg();
     }
 
     const newPanes = tabItems.filter(pane => pane.key !== targetKey);
@@ -548,15 +550,15 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                   <span className={`title ${titleOne === '1' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('1');
                     getTodoList();
-                  }}>待办事项</span>
+                  }}><CarryOutOutlined style={{ marginRight: 5 }} />待办事项</span>
                   <span className={`title ${titleOne === '2' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('2');
                     getUnreadNotice();
-                  }}>未读通知</span>
+                  }}><CommentOutlined style={{ marginRight: 5 }} />未读通知</span>
                   <span className={`title ${titleOne === '3' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('3');
                     getUnfinishedProcess();
-                  }}>未结事项</span>
+                  }}><SolutionOutlined style={{ marginRight: 5 }} />未结事项</span>
                 </div>
                 <div style={{ color: '#0142b8', cursor: 'pointer' }} onClick={() => {
                   let url = '';
@@ -628,8 +630,8 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
               <div className="itemHeader">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span className="labelIcon"></span>
-                  <span className={`title ${titleTwo === '1' ? 'selectedTitle' : ''}`} onClick={() => setTitleTwo('1')}>通知公告</span>
-                  <span className={`title ${titleTwo === '2' ? 'selectedTitle' : ''}`} onClick={() => setTitleTwo('2')}>公司制度</span>
+                  <span className={`title ${titleTwo === '1' ? 'selectedTitle' : ''}`} onClick={() => setTitleTwo('1')}><BellOutlined style={{ marginRight: 5 }} />通知公告</span>
+                  <span className={`title ${titleTwo === '2' ? 'selectedTitle' : ''}`} onClick={() => setTitleTwo('2')}><FileOutlined style={{ marginRight: 5 }} />公司制度</span>
                 </div>
                 <div style={{ color: '#0142b8', cursor: 'pointer' }} onClick={() => {
                   changeOpenPage({
@@ -677,8 +679,8 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
               <div className="itemHeader">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span className="labelIcon"></span>
-                  <span className={`title ${titleThree === '1' ? 'selectedTitle' : ''}`} onClick={() => setTitleThree('1')}>公司新闻</span>
-                  <span className={`title ${titleThree === '2' ? 'selectedTitle' : ''}`} onClick={() => setTitleThree('2')}>企业文化</span>
+                  <span className={`title ${titleThree === '1' ? 'selectedTitle' : ''}`} onClick={() => setTitleThree('1')}><PictureOutlined style={{ marginRight: 5 }} />公司新闻</span>
+                  <span className={`title ${titleThree === '2' ? 'selectedTitle' : ''}`} onClick={() => setTitleThree('2')}><BookOutlined style={{ marginRight: 5 }} />企业文化</span>
                 </div>
                 <div style={{ color: '#0142b8', cursor: 'pointer' }}onClick={() => {
                   changeOpenPage({
@@ -702,7 +704,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                                   backgroundImage: `url(${item.imageUrl})`,
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
-                                  margin: 0
+                                  margin: 0,
                                 }}
                               >
                               </h3>
@@ -750,11 +752,13 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
                                 style={{
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
-                                  paddingRight: 50
                                 }}
                               >{item.newTitle}</span>
+                              {isWithinDays(item.time, 3) && (
+                                <span className="newTag">NEW</span>
+                              )}
                             </div>
-                            <span style={{ flexShrink: 0 }}>{item.time}</span>
+                            <span style={{ flexShrink: 0, marginLeft: 50 }}>{item.time}</span>
                           </div>
                         )
                       })}
@@ -798,22 +802,24 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage 
               <div className="itemHeader">
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <span className="labelIcon"></span>
-                  <span className="title" style={{ color: '#312f30', fontWeight: 600 }}>应用系统</span>
+                  <span className="title" style={{ color: '#312f30', fontWeight: 600 }}><LinkOutlined style={{ marginRight: 5 }} />应用系统</span>
                 </div>
                 {/* <div style={{ color: '#0142b8', cursor: 'pointer' }}><RightOutlined style={{ marginRight: 6 }} />更多</div> */}
               </div>
               <div className="itemBody">
-                <div style={{ padding: '10px 0', display: 'flex', flexWrap: 'wrap' }}>
-                  {map(shortcutList, (item, index) => {
-                    return (
-                      <div className="shortcutItem" onClick={() => clickShortcut(item)}>
-                        <div>
-                          <Image src={item.iconUrl} width={50} height={50} preview={false} />
+                <div style={{ padding: '10px 0' }}>
+                  <Flex wrap gap="small">
+                    {map(shortcutList, (item, index) => {
+                      return (
+                        <div className="shortcutItem" onClick={() => clickShortcut(item)}>
+                          <div>
+                            <Image src={item.iconUrl} width={50} height={50} preview={false} />
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#333', marginTop: 5 }}>{item.appName}</div>
                         </div>
-                        <div style={{ fontSize: '11px', color: '#333', marginTop: 5 }}>{item.appName}</div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </Flex>
                 </div>
                 {isEmpty(shortcutList) && (
                   <Empty description="暂无数据~" style={{ marginTop: 20 }} />

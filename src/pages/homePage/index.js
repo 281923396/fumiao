@@ -6,19 +6,47 @@ import React, { useState, useEffect } from 'react';
 import { get, post } from '../../utils/request';
 import Banner from '../../assets/banner.jpg'
 import Config from '../../utils/constant';
+import { useGlobal } from '../contexts/GlobalContext';
+import { isEmpty } from 'lodash-es';
 
 const { Header, Content, Footer } = Layout;
 
 const HomePage = () => {
   const { Sid, ModuleId, BaseUrl } = Config;
 
+  const { globalField } = useGlobal();
+
   const [currentMenu, setCurrentMenu] = useState('home');
   const [bannerUrl, setBannerUrl] = useState('');
   const [openPage, setOpenPage] = useState({});
+  const [unread, setUnread] = useState(false);
 
   useEffect(() => {
     getBanner();
   }, [])
+
+  useEffect(() => {
+    if (globalField) {
+      getUnreadList(globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000);
+    }
+  }, [globalField])
+
+  const getUnreadList = (time) => {
+    get('/r/w', { cmd: 'com.actionsoft.apps.notification_load_unread_msg', sid: Sid }).then((res) => {
+      if (res.result === 'ok') {
+        if (!isEmpty(res?.data?.list)) {
+          setUnread(true);
+        } else {
+          setUnread(false);
+        }
+      }
+      if (time) {
+        setTimeout(() => {
+          getUnreadList(time);
+        }, time);
+      }
+    })
+  };
 
   const getBanner = () => {
     get('/r/w', { cmd: 'com.fumiao.portal.cms', sid: Sid, moduleId: ModuleId, type: 4 }).then((res) => {
@@ -81,6 +109,7 @@ const HomePage = () => {
           ></div>
           <TopMenu
             currentMenu={currentMenu}
+            unread={unread}
             changeCurrentMenu={(value) => {
               setCurrentMenu(value);
             }}
@@ -98,6 +127,9 @@ const HomePage = () => {
             }}
             changeOpenPage={(data) => {
               setOpenPage(data);
+            }}
+            reloadMsg={() => {
+              getUnreadList();
             }}
           />
         </Content>

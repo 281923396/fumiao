@@ -44,7 +44,7 @@ const typeList = [
   },
 ];
 
-const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
+const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage, unread }) => {
   const { Sid, BaseUrl } = Config;
   const { globalField } = useGlobal();
 
@@ -56,7 +56,6 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
   const [loginoutOpen, setLoginoutOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [unread, setUnread] = useState(false);
   const [type, setType] = useState('流程');
   const [passWord, setPassWord] = useState({
     old: '',
@@ -67,12 +66,6 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
   useEffect(() => {
     getAllMenu();
   }, [])
-
-  useEffect(() => {
-    if (globalField) {
-      getUnreadList(globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000);
-    }
-  }, [globalField])
 
   const onTitleClick = (e) => {
     changeCurrentMenu(e.key);
@@ -119,21 +112,6 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
         const list = menuItem.concat(nav);
         setMenuItem(list);
       }
-    })
-  };
-
-  const getUnreadList = (time) => {
-    get('/r/w', { cmd: 'com.actionsoft.apps.notification_load_unread_msg', sid: Sid }).then((res) => {
-      if (res.result === 'ok') {
-        if (!isEmpty(res?.data?.list)) {
-          setUnread(true);
-        } else {
-          setUnread(false);
-        }
-      }
-      setTimeout(() => {
-        getUnreadList(time);
-      }, time);
     })
   };
 
@@ -189,7 +167,9 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 30px' }}>
         <div style={{ display: 'flex', flex: 1, alignItems: 'center' }}>
           <span style={{ marginRight: 20 }}>
-            <Image src={Logo} preview={false} style={{ height: 35 }} />
+            <Image src={Logo} preview={false} style={{ height: 35, cursor: 'pointer' }} onClick={() => {
+              changeCurrentMenu('home');
+            }} />
           </span>
           <Menu
             onClick={onClickMenu}
@@ -206,7 +186,8 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage }) => {
               onClick={() => {
                 changeOpenPage({
                   label: '通知',
-                  key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.notification_center`
+                  key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.notification_center`,
+                  type: 'message',
                 })
               }}
             />

@@ -1,5 +1,5 @@
 .topMenu {
-  
+  position: relative;
 }
 .topMenu .ant-menu-item-selected .ant-menu-title-content {
     color: white !important;
@@ -92,6 +92,10 @@
 
 .ant-menu-submenu-popup:has(.ant-menu-submenu-level-1) {
     top: 44px !important;
+}
+
+.css-var-root.ant-input-css-var {
+    --ant-input-active-shadow: none;
 }
 
 .searchItem {

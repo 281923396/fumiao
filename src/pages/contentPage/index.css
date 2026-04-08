@@ -13,6 +13,7 @@
     width: 60%;
     background-color: #fff;
     min-height: 250px;
+    border-radius: 10px;
 }
 
 .container .rightItem {
@@ -20,6 +21,7 @@
     background-color: #fff;
     margin-left: 10px;
     min-height: 250px;
+    border-radius: 10px;
 }
 
 .minHeight {
@@ -38,7 +40,7 @@
     width: 3px;
     height: 14px;
     background-color: #0142b8;
-    margin-right: 4px;
+    margin-right: 6px;
     border-radius: 2px;
     display: inline-block;
     margin-top: 2px;
@@ -102,6 +104,10 @@
     height: 220px;
 }
 
+.ant-carousel .slick-slider .slick-list {
+    border-radius: 6px;
+}
+
 .newsList {
     margin-left: 15px;
     flex: 1;
@@ -154,6 +160,7 @@
     padding: 5px;
     margin: 10px 10px 0 !important;
     background-color: #fff;
+    border-radius: 6px;
 }
 
 .ant-tabs .ant-tabs-tab-btn {
