@@ -18,8 +18,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   const [titleTwo, setTitleTwo] = useState('1');
   const [titleThree, setTitleThree] = useState('1');
   const [unreadNoticeList, setUnreadNoticeList] = useState([]);
+  const [unreadNoticeTotal, setUnreadNoticeTotal] = useState(0);
   const [unfinishedProcessList, setUnfinishedProcessList] = useState([]);
+  const [unfinishedProcessTotal, setUnfinishedProcessTotal] = useState(0);
   const [todoList, setTodoList] = useState([]);
+  const [todoTotal, setTodoTotal] = useState(0);
   const [noticeList, setNoticeList] = useState([]);
   const [companySystemList, setCompanySystemList] = useState([]);
   const [companyNewList, setCompanyNewList] = useState([]);
@@ -166,7 +169,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   const getNoticeList = () => {
     get('/r/w', { cmd: 'com.fumiao.portal.cms', sid: Sid, type: '1' }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.datalist)) {
-        const list = res.data.datalist.slice(0, 5);
+        const list = res.data.datalist.slice(0, 8);
         for (const key in list) {
           list[key].newTitle = list[key].title || list[key].msgTitle;
           list[key].time = formatDate(list[key].releaseTimeExt || list[key].releaseTime);
@@ -240,7 +243,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   const getCompanySystemList = () => {
     get('/r/w', { cmd: 'com.fumiao.portal.cms', sid: Sid, type: '2' }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.datalist)) {
-        const list = res.data.datalist.slice(0, 5);
+        const list = res.data.datalist.slice(0, 8);
         for (const key in list) {
           list[key].newTitle = list[key].title || list[key].msgTitle;
           list[key].time = formatDate(list[key].releaseTimeExt || list[key].releaseTime);
@@ -252,9 +255,13 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
 
   // 获取我的待办
   const getTodoList = (time) => {
-    get('/r/w', { cmd: 'com.bono.portal.task.todoList', sid: Sid, serachWord: '', start: '1', limit: '5', }).then((res) => {
+    get('/r/w', { cmd: 'com.bono.portal.task.todoList', sid: Sid, serachWord: '', start: '1', limit: '8', }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.tasks)) {
         setTodoList(res.data.tasks);
+        setTodoTotal(res.data.totalCount);
+      } else {
+        setTodoList([]);
+        setTodoTotal(0);
       }
       if (time) {
         setTimeout(() => {
@@ -267,8 +274,12 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   // 获取未读通知
   const getUnreadNotice = (time) => {
     get('/r/w', { cmd: 'com.awspaas.user.apps.feymer.newportal.getUnreadNotice', sid: Sid }).then((res) => {
-      if (res.result === 'ok' && !isEmpty(res?.data)) {
-        setUnreadNoticeList(res.data);
+      if (res.result === 'ok' && !isEmpty(res?.data?.taskArray)) {
+        setUnreadNoticeList(res.data.taskArray);
+        setUnreadNoticeTotal(res.data.total);
+      } else {
+        setUnreadNoticeList([]);
+        setUnreadNoticeTotal(0);
       }
       if (time) {
         setTimeout(() => {
@@ -281,8 +292,12 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   // 获取未结事项
   const getUnfinishedProcess = (time) => {
     get('/r/w', { cmd: 'com.awspaas.user.apps.feymer.newportal.getUnfinishedProcess', sid: Sid }).then((res) => {
-      if (res.result === 'ok' && !isEmpty(res?.data)) {
-        setUnfinishedProcessList(res.data);
+      if (res.result === 'ok' && !isEmpty(res?.data?.taskArray)) {
+        setUnfinishedProcessList(res.data.taskArray);
+        setUnfinishedProcessTotal(res.data.total);
+      } else {
+        setUnfinishedProcessList([]);
+        setUnfinishedProcessTotal(0);
       }
       if (time) {
         setTimeout(() => {
@@ -550,15 +565,15 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                   <span className={`title ${titleOne === '1' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('1');
                     getTodoList();
-                  }}><CarryOutOutlined style={{ marginRight: 5 }} />待办事项</span>
+                  }}><CarryOutOutlined style={{ marginRight: 5 }} />待办事项(<span style={{ color: '#f04134' }}>{todoTotal}</span>)</span>
                   <span className={`title ${titleOne === '2' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('2');
                     getUnreadNotice();
-                  }}><CommentOutlined style={{ marginRight: 5 }} />未读通知</span>
+                  }}><CommentOutlined style={{ marginRight: 5 }} />未读通知(<span style={{ color: '#f04134' }}>{unreadNoticeTotal}</span>)</span>
                   <span className={`title ${titleOne === '3' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('3');
                     getUnfinishedProcess();
-                  }}><SolutionOutlined style={{ marginRight: 5 }} />未结事项</span>
+                  }}><SolutionOutlined style={{ marginRight: 5 }} />未结事项(<span style={{ color: '#f04134' }}>{unfinishedProcessTotal}</span>)</span>
                 </div>
                 <div style={{ color: '#0142b8', cursor: 'pointer' }} onClick={() => {
                   let url = '';
@@ -592,7 +607,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                 </div> */}
                 {map(titleOne === '1' ? todoList : titleOne === '2' ? unreadNoticeList : unfinishedProcessList, (item, index) => {
                   return (
-                    <div className="msgItem" key={index} onClick={() => {
+                    <div className="msgItemOld" key={index} onClick={() => {
                       if (titleOne === '1') {
                         let newUrl = item.openUrl.replace('./w', '');
                         changeOpenPage({
@@ -616,7 +631,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                           textOverflow: 'ellipsis',
                           paddingRight: 50
                         }}
-                      >{item.title}</span>
+                      ><span className="oldDot"></span>{item.title}</span>
                       <span style={{ flexShrink: 0 }}>{item.beginTime}</span>
                     </div>
                   )
@@ -645,7 +660,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
               <div className="itemBody">
                 {map(titleTwo === '1' ? noticeList : companySystemList, (item, index) => {
                   return (
-                    <div className="msgItem" key={index} onClick={() => {
+                    <div className="msgItemOld" key={index} onClick={() => {
                       if (!item.id) {
                         message.warning('无法打开该内容，缺少必要参数！');
                         return;
@@ -663,7 +678,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                           textOverflow: 'ellipsis',
                           paddingRight: 50
                         }}
-                      >{item.newTitle}</span>
+                      ><span className="oldDot"></span>{item.newTitle}</span>
                       <span style={{ flexShrink: 0 }}>{item.time}</span>
                     </div>
                   )
@@ -768,7 +783,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                   <div style={{ padding: '10px 0' }}>
                     {map(cultureList, (item, index) => {
                       return (
-                        <div className="msgItem" key={index} onClick={() => {
+                        <div className="msgItemOld" key={index} onClick={() => {
                           if (!item.id) {
                             message.warning('无法打开该内容，缺少必要参数！');
                             return;
@@ -786,7 +801,57 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                               textOverflow: 'ellipsis',
                               paddingRight: 50
                             }}
-                          >{item.newTitle}</span>
+                          ><span className="oldDot"></span>{item.newTitle}</span>
+                          <span style={{ flexShrink: 0 }}>{item.time}</span>
+                        </div>
+                      )
+                    })}
+                    {map(cultureList, (item, index) => {
+                      return (
+                        <div className="msgItemOld" key={index} onClick={() => {
+                          if (!item.id) {
+                            message.warning('无法打开该内容，缺少必要参数！');
+                            return;
+                          }
+                          changeOpenPage({
+                            label: item.newTitle,
+                            key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
+                          })
+                        }}>
+                          <span
+                            title={item.title}
+                            style={{
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              paddingRight: 50
+                            }}
+                          ><span className="oldDot"></span>{item.newTitle}</span>
+                          <span style={{ flexShrink: 0 }}>{item.time}</span>
+                        </div>
+                      )
+                    })}
+                    {map(cultureList, (item, index) => {
+                      return (
+                        <div className="msgItemOld" key={index} onClick={() => {
+                          if (!item.id) {
+                            message.warning('无法打开该内容，缺少必要参数！');
+                            return;
+                          }
+                          changeOpenPage({
+                            label: item.newTitle,
+                            key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
+                          })
+                        }}>
+                          <span
+                            title={item.title}
+                            style={{
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              paddingRight: 50
+                            }}
+                          ><span className="oldDot"></span>{item.newTitle}</span>
                           <span style={{ flexShrink: 0 }}>{item.time}</span>
                         </div>
                       )
