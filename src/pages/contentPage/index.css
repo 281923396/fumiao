@@ -10,9 +10,9 @@
 }
 
 .container .leftItem {
-    width: 60%;
+    width: 62%;
     background-color: #fff;
-    min-height: 250px;
+    min-height: 255px;
     border-radius: 10px;
 }
 
@@ -20,12 +20,12 @@
     flex: 1;
     background-color: #fff;
     margin-left: 10px;
-    min-height: 250px;
+    min-height: 255px;
     border-radius: 10px;
 }
 
 .minHeight {
-    min-height: 300px !important;
+    min-height: 305px !important;
 }
 
 .itemHeader {
@@ -128,8 +128,8 @@
 }
 
 .comPic {
-    width: 340px;
-    height: 220px;
+    width: 352px;
+    height: 198px;
 }
 
 .ant-carousel .slick-slider .slick-list {
@@ -148,7 +148,7 @@
     justify-content: space-between;
     color: rgb(102, 102, 102);
     border-bottom: 1px dashed #cecece;
-    padding: 18px 0;
+    padding: 16px 0;
     font-size: 12px;
     cursor: pointer;
 }

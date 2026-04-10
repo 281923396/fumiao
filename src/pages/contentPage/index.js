@@ -706,7 +706,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
               </div>
               <div className="itemBody">
                 {titleThree === '1' ? (
-                  <div style={{ display: 'flex', padding: '9px 0' }}>
+                  <div style={{ display: 'flex', padding: '20px 0' }}>
                     {!isEmpty(companyNewList) && (
                       <Carousel arrows className="comPic" autoplay>
                        {map(companyNewList, (item, index) => {
@@ -714,8 +714,8 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                             <div>
                               <h3
                                 style={{
-                                  width: 340,
-                                  height: 220,
+                                  width: 352,
+                                  height: 198,
                                   backgroundImage: `url(${item.imageUrl})`,
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
