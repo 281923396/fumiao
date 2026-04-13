@@ -22,12 +22,13 @@ const HomePage = () => {
   const [unread, setUnread] = useState(false);
 
   useEffect(() => {
-    getBanner();
-  }, [])
-
-  useEffect(() => {
     if (globalField) {
       getUnreadList(globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000);
+      if (globalField.photoUrl) {
+        setBannerUrl(globalField.photoUrl);
+      } else {
+        getBanner();
+      }
     }
   }, [globalField])
 

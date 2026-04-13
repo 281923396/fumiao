@@ -806,56 +806,6 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                         </div>
                       )
                     })}
-                    {map(cultureList, (item, index) => {
-                      return (
-                        <div className="msgItemOld" key={index} onClick={() => {
-                          if (!item.id) {
-                            message.warning('无法打开该内容，缺少必要参数！');
-                            return;
-                          }
-                          changeOpenPage({
-                            label: item.newTitle,
-                            key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
-                          })
-                        }}>
-                          <span
-                            title={item.title}
-                            style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              paddingRight: 50
-                            }}
-                          ><span className="oldDot"></span>{item.newTitle}</span>
-                          <span style={{ flexShrink: 0 }}>{item.time}</span>
-                        </div>
-                      )
-                    })}
-                    {map(cultureList, (item, index) => {
-                      return (
-                        <div className="msgItemOld" key={index} onClick={() => {
-                          if (!item.id) {
-                            message.warning('无法打开该内容，缺少必要参数！');
-                            return;
-                          }
-                          changeOpenPage({
-                            label: item.newTitle,
-                            key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
-                          })
-                        }}>
-                          <span
-                            title={item.title}
-                            style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              paddingRight: 50
-                            }}
-                          ><span className="oldDot"></span>{item.newTitle}</span>
-                          <span style={{ flexShrink: 0 }}>{item.time}</span>
-                        </div>
-                      )
-                    })}
                   </div>
                 )}
                 {((titleThree === '1' && isEmpty(companyNewList)) || (titleThree === '2' && isEmpty(cultureList))) && (
