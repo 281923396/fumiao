@@ -33,13 +33,6 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   const activeKeyRef = useRef(activeKey);
 
   useEffect(() => {
-    getNoticeList();
-    getCompanySystemList();
-    getCultureList();
-    getShortcutList();
-  }, [])
-
-  useEffect(() => {
     tabItemsRef.current = tabItems;
   }, [tabItems]);
 
@@ -131,15 +124,20 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   // 需要获取到配置字段再去调用的接口
   useEffect(() => {
     if (globalField) {
-      getTodoList(globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000);
-      getUnreadNotice(globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000);
-      getUnfinishedProcess(globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000);
-      getCompanyNewList();
+      const refreshTime = globalField.messageRefreshRate ? Number(globalField.messageRefreshRate) * 1000 : 30000;
+      getTodoList(refreshTime);
+      getUnreadNotice(refreshTime);
+      getUnfinishedProcess(refreshTime);
+      getNoticeList(refreshTime);
+      getCompanySystemList(refreshTime);
+      getCultureList(refreshTime);
+      getCompanyNewList(refreshTime);
+      getShortcutList(refreshTime);
     }
   }, [globalField])
 
   // 获取快捷方式
-  const getShortcutList = () => {
+  const getShortcutList = (time) => {
     get('/r/w', { cmd: 'com.bono.portal.userfunction', sid: Sid }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.shortCuts)) {
         const list = res.data.shortCuts;
@@ -162,11 +160,16 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
         }
         setShortcutList(list);
       }
+      if (time) {
+        setTimeout(() => {
+          getShortcutList(time);
+        }, time);
+      }
     })
   };
 
   // 获取通知公告
-  const getNoticeList = () => {
+  const getNoticeList = (time) => {
     get('/r/w', { cmd: 'com.fumiao.portal.cms', sid: Sid, type: '1' }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.datalist)) {
         const list = res.data.datalist.slice(0, 8);
@@ -176,11 +179,16 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
         }
         setNoticeList(list);
       }
+      if (time) {
+        setTimeout(() => {
+          getNoticeList(time);
+        }, time);
+      }
     })
   };
 
   // 获取公司新闻图片
-  const getCompanyNewList = () => {
+  const getCompanyNewList = (time) => {
     get('/r/w', { cmd: 'com.actionsoft.apps.cms_get_board_list', sid: Sid, siteId: globalField.siteId }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.widgetList)) {
         const widgetData = res.data.widgetList.find(widget => widget.widgetName === "图片新闻");
@@ -222,11 +230,16 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
           setCompanyNewList(list);
         }
       }
+      if (time) {
+        setTimeout(() => {
+          getCompanyNewList(time);
+        }, time);
+      }
     })
   };
 
   // 获取公司文化
-  const getCultureList = () => {
+  const getCultureList = (time) => {
     get('/r/w', { cmd: 'com.fumiao.portal.cms', sid: Sid, type: '3' }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.datalist)) {
         const list = res.data.datalist.slice(0, 5);
@@ -236,11 +249,16 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
         }
         setCultureList(list);
       }
+      if (time) {
+        setTimeout(() => {
+          getCultureList(time);
+        }, time);
+      }
     })
   };
 
   // 获取公司制度
-  const getCompanySystemList = () => {
+  const getCompanySystemList = (time) => {
     get('/r/w', { cmd: 'com.fumiao.portal.cms', sid: Sid, type: '2' }).then((res) => {
       if (res.result === 'ok' && !isEmpty(res?.data?.datalist)) {
         const list = res.data.datalist.slice(0, 8);
@@ -249,6 +267,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
           list[key].time = formatDate(list[key].releaseTimeExt || list[key].releaseTime);
         }
         setCompanySystemList(list);
+      }
+      if (time) {
+        setTimeout(() => {
+          getCompanySystemList(time);
+        }, time);
       }
     })
   };
@@ -565,11 +588,11 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                   <span className={`title ${titleOne === '1' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('1');
                     getTodoList();
-                  }}><CarryOutOutlined style={{ marginRight: 5 }} />待办事项(<span style={{ color: '#f04134' }}>{todoTotal}</span>)</span>
+                  }}><CarryOutOutlined style={{ marginRight: 5 }} />待办任务(<span style={{ color: '#f04134' }}>{todoTotal}</span>)</span>
                   <span className={`title ${titleOne === '2' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('2');
                     getUnreadNotice();
-                  }}><CommentOutlined style={{ marginRight: 5 }} />未读通知(<span style={{ color: '#f04134' }}>{unreadNoticeTotal}</span>)</span>
+                  }}><CommentOutlined style={{ marginRight: 5 }} />待阅任务(<span style={{ color: '#f04134' }}>{unreadNoticeTotal}</span>)</span>
                   <span className={`title ${titleOne === '3' ? 'selectedTitle' : ''}`} onClick={() => {
                     setTitleOne('3');
                     getUnfinishedProcess();
@@ -579,10 +602,10 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                   let url = '';
                   let label = '';
                   if (titleOne === '1') {
-                    label = '待办事项';
+                    label = '待办任务';
                     url = `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=todo`;
                   } else if (titleOne === '2') {
-                    label = '未读通知';
+                    label = '待阅任务';
                     url = `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=unreadNotice`;
                   } else {
                     
@@ -708,7 +731,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                 {titleThree === '1' ? (
                   <div style={{ display: 'flex', padding: '20px 0' }}>
                     {!isEmpty(companyNewList) && (
-                      <Carousel arrows className="comPic" autoplay>
+                      <Carousel arrows className="comPic" autoplay autoplaySpeed={5000}>
                        {map(companyNewList, (item, index) => {
                           return (
                             <div>

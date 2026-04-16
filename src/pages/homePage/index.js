@@ -100,7 +100,7 @@ const HomePage = () => {
               position: 'absolute',
               inset: 0,
               backgroundImage: `url(${bannerUrl})`,
-              backgroundSize: 'cover',
+              backgroundSize: '100% 100%',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
               opacity: currentMenu === 'home' ? 1 : 0,
