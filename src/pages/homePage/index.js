@@ -1,7 +1,8 @@
 import TopMenu from '../topMenu';
 import ContentPage from '../contentPage';
 import './index.css';
-import { Layout } from 'antd';
+import { Layout, notification } from 'antd';
+import { RadiusBottomrightOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { get, post } from '../../utils/request';
 import Banner from '../../assets/banner.jpg'
@@ -12,6 +13,7 @@ import { isEmpty } from 'lodash-es';
 const { Header, Content, Footer } = Layout;
 
 const HomePage = () => {
+  const [api, contextHolder] = notification.useNotification();
   const { Sid, ModuleId, BaseUrl } = Config;
 
   const { globalField } = useGlobal();
@@ -37,6 +39,36 @@ const HomePage = () => {
       if (res.result === 'ok') {
         if (!isEmpty(res?.data?.list)) {
           setUnread(true);
+          let url = '';
+          if (!isEmpty(res.data.list[0].buttons) && res.data.list[0].buttons[0].action) {
+            url = res.data.list[0].buttons[0].action.replace('./w', '');
+            url = `${BaseUrl}r/w${url}`;
+          }
+          api.info({
+            title: `消息`,
+            key: url,
+            description:
+              <div
+                style={{
+                  cursor: url ? 'pointer' : '',
+                  color: url ? 'rgb(1, 66, 184)' : '',
+                }}
+                onClick={() => {
+                  if (url) {
+                    setOpenPage({
+                      label: res.data.list[0].content,
+                      key: url,
+                      type: 'message',
+                    })
+                    api.destroy(url);
+                  }
+                }}
+              >
+                {res.data.list[0].content}
+              </div>,
+            placement: 'bottomRight',
+            duration: 5,
+          });
         } else {
           setUnread(false);
         }
@@ -60,16 +92,16 @@ const HomePage = () => {
             const titPicUrl = data.titPicList[0].titPicUrl;
             if (titPicUrl.startsWith('./')) {
               // 移除开头的'./'，并使用正确的路径 - 只用一个df
-              imageUrl = `${BaseUrl}/r${titPicUrl.substring(1)}`;
+              imageUrl = `${BaseUrl}r${titPicUrl.substring(1)}`;
             } else {
-              imageUrl = `${BaseUrl}/r${titPicUrl}`;
+              imageUrl = `${BaseUrl}r${titPicUrl}`;
             }
           } else if (data.titlePicF && data.titlePicF.length > 0) {
             // 备选：使用titlePicF
-            imageUrl = `${BaseUrl}/r/df?fileName=${data.titlePicF[0].fileName}&sid=${this.sid}`;
+            imageUrl = `${BaseUrl}r/df?fileName=${data.titlePicF[0].fileName}&sid=${this.sid}`;
           } else if (data.msgTitlePic) {
             // 备选：使用msgTitlePic
-            imageUrl = `${BaseUrl}/r/df?fileName=${data.msgTitlePic}&sid=${this.sid}`;
+            imageUrl = `${BaseUrl}r/df?fileName=${data.msgTitlePic}&sid=${this.sid}`;
           } else {
             // 默认图片
             imageUrl = Banner;
@@ -84,10 +116,11 @@ const HomePage = () => {
 
   return (
     <div className="homePage" id="homePage">
+      {contextHolder}
       <Layout style={{ minHeight: '100vh' }}>
         <Header
           style={{
-            height: currentMenu === 'home' ? 300 : 64,
+            height: currentMenu === 'home' ? 200 : 64,
             backgroundColor: currentMenu === 'home' ? '' : '#418ff3',
             position: 'relative',
             // backgroundImage: currentMenu === 'home' ? `url(${bannerUrl})` : '',

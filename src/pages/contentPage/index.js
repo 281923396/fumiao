@@ -147,13 +147,13 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
             // 简化URL构建逻辑，使用正确的/r/df格式
             if (list[key].appIconUrl.startsWith('/df')) {
               // 如果已经是/df开头，添加/r前缀
-              iconUrl = BaseUrl + '/r' + list[key].appIconUrl;
+              iconUrl = BaseUrl + 'r' + list[key].appIconUrl;
             } else if (list[key].appIconUrl.startsWith('/')) {
               // 如果以/开头但不是/df，替换为/r/df
-              iconUrl = BaseUrl + '/r/df' + list[key].appIconUrl.substring(1);
+              iconUrl = BaseUrl + 'r/df' + list[key].appIconUrl.substring(1);
             } else {
               // 其他情况，添加/r/df/
-              iconUrl = BaseUrl + '/r/df/' + list[key].appIconUrl;
+              iconUrl = BaseUrl + 'r/df/' + list[key].appIconUrl;
             }
           }
           list[key].iconUrl = iconUrl;
@@ -204,7 +204,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
               // 如果是相对路径，需要处理
               if (url.startsWith('./')) {
                 // 移除开头的 './' 并拼接，只使用/r前缀
-                imageUrl = `${BaseUrl}/r${url.substring(1)}`;
+                imageUrl = `${BaseUrl}r${url.substring(1)}`;
               } else {
                 // 否则直接使用原始URL
                 imageUrl = url;
@@ -213,7 +213,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
               // 备选：使用waterMarkPicUrl
               const url = list[key].waterMarkPicUrl;
               if (url.startsWith('./')) {
-                imageUrl = `${BaseUrl}/r${url.substring(1)}`;
+                imageUrl = `${BaseUrl}r${url.substring(1)}`;
               } else {
                 imageUrl = url;
               }
@@ -333,9 +333,9 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
   // 点击菜单栏处理标签页
   useEffect(() => {
     if (currentMenu !== 'home' && currentMenu) {
-      const hasCurrentTab = tabItems.some(obj => obj.key.includes(currentMenu));
       let url = currentMenu.split('|')[2].replace('./w', '');
-      url = `${BaseUrl}/r/w${url}`;
+      url = `${BaseUrl}r/w${url}`;
+      const hasCurrentTab = tabItems.some(obj => obj.key.includes(url));
       if (!hasCurrentTab) {
         tabItems.push({
           label: <span title={currentMenu.split('|')[1]}>{currentMenu.split('|')[1]}</span>,
@@ -482,7 +482,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
       
       // 特殊处理SSO登录的应用（根据sso标识判断）
       if (item.sso === "1") {
-        url = `${BaseUrl}/r/w${url.replace('./w', '')}`;
+        url = `${BaseUrl}r/w${url.replace('./w', '')}`;
         // 如果URL中没有cmd参数，添加默认的cmd参数
         if (!url.includes('cmd=')) {
           const separator = url.includes('?') ? '&' : '?';
@@ -524,7 +524,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
             })
           }
         } else {
-          url = `${BaseUrl}/r/w${url.replace('./w', '')}`;
+          url = `${BaseUrl}r/w${url.replace('./w', '')}`;
           // 根据openType决定打开方式
           if (item.openType === "blank") {
             window.open(url, "_blank");
@@ -553,7 +553,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
       // 替换sid=null为sid=实际值
       url = url.replace('sid=null', `sid=${Sid}`);
     }
-    url = `${BaseUrl}/r/w${url.replace('./w', '')}`;
+    url = `${BaseUrl}r/w${url.replace('./w', '')}`;
     // 根据openType决定打开方式
     if (item.openType === "blank") {
       window.open(url, "_blank");
@@ -603,14 +603,14 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                   let label = '';
                   if (titleOne === '1') {
                     label = '待办任务';
-                    url = `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=todo`;
+                    url = `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=todo`;
                   } else if (titleOne === '2') {
                     label = '待阅任务';
-                    url = `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=unreadNotice`;
+                    url = `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.workbench_main_page&boxName=unreadNotice`;
                   } else {
                     
                     label = '未结事项';
-                    url = `${BaseUrl}/r/w?sid=${Sid}&cmd=CLIENT_DW_PORTAL&processGroupId=obj_d88ee0915c6f448ba708d28a82c97eb3&appId=com.awspaas.user.apps.feymer.newportal&dwViewId=obj_4c2d55438a6a4313af70a8d5315de350`;
+                    url = `${BaseUrl}r/w?sid=${Sid}&cmd=CLIENT_DW_PORTAL&processGroupId=obj_86e7bb20c255411a9e02866c08a1c49e&appId=com.awspaas.user.apps.feymer.newportal&dwViewId=obj_78fe1a5acf834261a398fe4fc58f40d3`;
                   }
                   changeOpenPage({
                     label: label,
@@ -635,7 +635,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                         let newUrl = item.openUrl.replace('./w', '');
                         changeOpenPage({
                           label: item.title,
-                          key: `${BaseUrl}/r/w${newUrl}`,
+                          key: `${BaseUrl}r/w${newUrl}`,
                           type: 'todo'
                         })
                       } else {
@@ -674,7 +674,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                 <div style={{ color: '#0142b8', cursor: 'pointer' }} onClick={() => {
                   changeOpenPage({
                     label: '资讯中心',
-                    key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_site&siteid=${globalField.siteId}`,
+                    key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_site&siteid=${globalField.siteId}`,
                   })
                 }}>
                   <RightOutlined style={{ marginRight: 6 }} />更多
@@ -690,7 +690,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                       }
                       changeOpenPage({
                         label: item.newTitle,
-                        key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
+                        key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
                       })
                     }}>
                       <span
@@ -723,7 +723,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                 <div style={{ color: '#0142b8', cursor: 'pointer' }}onClick={() => {
                   changeOpenPage({
                     label: '资讯中心',
-                    key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_site&siteid=${globalField.siteId}`,
+                    key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_site&siteid=${globalField.siteId}`,
                   })
                 }}><RightOutlined style={{ marginRight: 6 }} />更多</div>
               </div>
@@ -780,7 +780,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                             
                             changeOpenPage({
                               label: item.newTitle,
-                              key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${messageId}`,
+                              key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${messageId}`,
                             })
                           }}>
                             <div style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap', overflow: 'hidden' }}>
@@ -813,7 +813,7 @@ const ContentPage = ({ currentMenu, changeCurrentMenu, openPage, changeOpenPage,
                           }
                           changeOpenPage({
                             label: item.newTitle,
-                            key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
+                            key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.cms_get_message&messageId=${item.id}`,
                           })
                         }}>
                           <span

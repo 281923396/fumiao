@@ -186,7 +186,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage, unread }) => 
               onClick={() => {
                 changeOpenPage({
                   label: '通知',
-                  key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.notification_center`,
+                  key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.notification_center`,
                   type: 'message',
                 })
               }}
@@ -229,7 +229,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage, unread }) => 
                     if (searchValue) {
                       changeOpenPage({
                         label: '搜索',
-                        key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
+                        key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
                         params: `&searchWords=${searchValue}&name=${type}`
                       })
                     }
@@ -242,7 +242,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage, unread }) => 
                   if (searchValue) {
                     changeOpenPage({
                       label: '搜索',
-                      key: `${BaseUrl}/r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
+                      key: `${BaseUrl}r/w?sid=${Sid}&cmd=com.actionsoft.apps.elasticsearch_searchresultpage`,
                       params: `&searchWords=${searchValue}&name=${type}`
                     })
                   }
@@ -324,7 +324,7 @@ const TopMenu = ({ currentMenu, changeCurrentMenu, changeOpenPage, unread }) => 
         title="提示"
         open={loginoutOpen}
         onOk={() => {
-          window.location.href = `${BaseUrl}/r/w?sid=${Sid}&cmd=CLIENT_USER_INFO_LOGOUT`;
+          window.location.href = `${BaseUrl}r/w?sid=${Sid}&cmd=CLIENT_USER_INFO_LOGOUT`;
         }}
         maskClosable={false}
         okText="确定"
